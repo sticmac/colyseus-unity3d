@@ -288,18 +288,26 @@ namespace Colyseus
         /// <typeparam name="MessageType">The type of object the message responds with</typeparam>
         private class MessageRemover<MessageType> : IDisposable
         {
+            private string _type;
             private Action<MessageType> _targetHandler;
-            private ColyseusMessageHandler<MessageType> _registeredHandler;
+            private Dictionary<string, IColyseusMessageHandler> _onMessageHandlers;
 
-            public MessageRemover(Action<MessageType> targetHandler, ColyseusMessageHandler<MessageType> registeredHandler)
+            public MessageRemover(string type,
+                Action<MessageType> targetHandler,
+                Dictionary<string, IColyseusMessageHandler> onMessageHandlers)
             {
+                _type = type;
                 _targetHandler = targetHandler;
-                _registeredHandler = registeredHandler;
+                _onMessageHandlers = onMessageHandlers;
             }
 
             public void Dispose()
             {
-                _registeredHandler.Action -= _targetHandler;
+                var messageHandler = _onMessageHandlers[_type] as ColyseusMessageHandler<MessageType>;
+                messageHandler.Action -= _targetHandler;
+                if (messageHandler.Action == null) {
+                    _onMessageHandlers.Remove(_type);
+                }
             }
         }
 
@@ -312,18 +320,15 @@ namespace Colyseus
         /// <returns>IDisposable object to remove the message handler when called</returns>
         public IDisposable OnMessage<MessageType>(string type, Action<MessageType> handler)
         {
-            ColyseusMessageHandler<MessageType> messageHandler;
             if (OnMessageHandlers.ContainsKey(type)) {
-                messageHandler = (OnMessageHandlers[type] as ColyseusMessageHandler<MessageType>);
-                messageHandler.Action += handler;
+                (OnMessageHandlers[type] as ColyseusMessageHandler<MessageType>).Action += handler;
             } else {
-                messageHandler = new ColyseusMessageHandler<MessageType>
+                OnMessageHandlers.Add(type, new ColyseusMessageHandler<MessageType>
                 {
                     Action = handler
-                };
-                OnMessageHandlers.Add(type, messageHandler);
+                });
             }
-            return new MessageRemover<MessageType>(handler, messageHandler);
+            return new MessageRemover<MessageType>(type, handler, OnMessageHandlers);
         }
 
         /// <summary>
