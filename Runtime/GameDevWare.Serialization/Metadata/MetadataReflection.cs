@@ -1,19 +1,19 @@
 #if UNITY_3_3 || UNITY_3_4 || UNITY_3_5 || UNITY_4 || UNITY_4_7 || UNITY_5 || UNITY_5_3_OR_NEWER
 #define UNITY
 #endif
-/* 
+/*
 	Copyright (c) 2019 Denis Zykov, GameDevWare.com
 
 	This a part of "Json & MessagePack Serialization" Unity Asset - https://www.assetstore.unity3d.com/#!/content/59918
 
-	THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT ANY WARRANTIES, CONDITIONS AND 
-	REPRESENTATIONS WHETHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE 
-	IMPLIED WARRANTIES AND CONDITIONS OF MERCHANTABILITY, MERCHANTABLE QUALITY, 
-	FITNESS FOR A PARTICULAR PURPOSE, DURABILITY, NON-INFRINGEMENT, PERFORMANCE 
+	THIS SOFTWARE IS DISTRIBUTED "AS-IS" WITHOUT ANY WARRANTIES, CONDITIONS AND
+	REPRESENTATIONS WHETHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE
+	IMPLIED WARRANTIES AND CONDITIONS OF MERCHANTABILITY, MERCHANTABLE QUALITY,
+	FITNESS FOR A PARTICULAR PURPOSE, DURABILITY, NON-INFRINGEMENT, PERFORMANCE
 	AND THOSE ARISING BY STATUTE OR FROM CUSTOM OR USAGE OF TRADE OR COURSE OF DEALING.
-	
-	This source code is distributed via Unity Asset Store, 
-	to use it in your project you should accept Terms of Service and EULA 
+
+	This source code is distributed via Unity Asset Store,
+	to use it in your project you should accept Terms of Service and EULA
 	https://unity3d.com/ru/legal/as_terms
 */
 using System;
@@ -177,7 +177,7 @@ namespace GameDevWare.Serialization.Metadata
 
 						setFn = ((Expression<Action<object, object>>)Expression.Lambda(typeof(Action<object, object>),
 							Expression.Assign(
-								Expression.Field(Expression.Convert(instanceParam, declaringType), fieldInfo), 
+								Expression.Field(Expression.Convert(instanceParam, declaringType), fieldInfo),
 								Expression.Convert(valueParam, fieldType)),
 							instanceParam,
 							valueParam
@@ -197,7 +197,7 @@ namespace GameDevWare.Serialization.Metadata
 			ctrFn = null;
 			defaultConstructor = null;
 
-			if (AotRuntime || type.IsAbstract || type.IsInterface)
+			if (/*AotRuntime || */type.IsAbstract || type.IsInterface)
 				return false;
 
 			defaultConstructor = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).FirstOrDefault(ctr => ctr.GetParameters().Length == 0);
